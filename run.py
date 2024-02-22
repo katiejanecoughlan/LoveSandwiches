@@ -121,9 +121,7 @@ def get_stock_values(data):
     Retrieve headings from spreadsheet and construct a dictionary
     """
     headings = SHEET.worksheet("stock").row_values(1)
-    data_values = SHEET.worksheet("stock").get_all_values()[1:]  # Exclude the first row (headings)
-    
-    # Create a dictionary using dictionary comprehension
+    data_values = SHEET.worksheet("stock").get_all_values()[1:]    
     stock_dict = {headings[i]: int(row[i]) for i in range(len(headings)) for row in data_values}
 
     return stock_dict

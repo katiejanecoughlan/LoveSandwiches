@@ -1,5 +1,6 @@
 import gspread
 from google.oauth2.service_account import Credentials
+from pprint import pprint
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -108,10 +109,25 @@ def calculate_stock_data(data):
     for column in data:
         int_column = [int(num) for num in column]
         average = sum(int_column) / len(int_column)
-        stock_num = average * 1.1 #adds 10% to average
+        #Add 10% to average
+        stock_num = average * 1.1 
         new_stock_data.append(round(stock_num))
 
     return new_stock_data
+
+
+def get_stock_values(data):
+    """
+    Retrieve headings from spreadsheet and construct a dictionary
+    """
+    headings = SHEET.worksheet("stock").row_values(1)
+    data_values = SHEET.worksheet("stock").get_all_values()[1:]  # Exclude the first row (headings)
+    
+    # Create a dictionary using dictionary comprehension
+    stock_dict = {headings[i]: int(row[i]) for i in range(len(headings)) for row in data_values}
+
+    return stock_dict
+
 
 
 def main():
@@ -126,6 +142,9 @@ def main():
     sales_columns = get_last_5_entries_sales()
     stock_data = calculate_stock_data(sales_columns)
     update_worksheet(stock_data, "stock")
+    stock_values = get_stock_values (stock_data)
+    print("Current stock levels per sandwich:\n")
+    pprint(stock_values)
 
 print("Welcome to Love Sandwiches Data Automation")
 main()
